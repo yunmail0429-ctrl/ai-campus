@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>西南大学附属中学两江中学 · 智能教育助手</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%232E5FA3'/%3E%3Cpath d='M16 8c-1.9 1.6-3.8 2.4-6.2 2.5v11c2.4-.1 4.3-.9 6.2-2.5 1.9 1.6 3.8 2.4 6.2 2.5v-11c-2.4-.1-4.3-.9-6.2-2.5z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#2E5FA3;
+  --blue-deep:#23497F;
+  --blue-soft:#EAF1FA;
+  --ink:#1B2A41;
+  --muted:#556278;
+  --hair:#DCE3EE;
+  --field:#F4F7FB;
+  --success:#279e68;
+  --warn:#e6a23c;
+  --danger:#dd5252;
+  --shadow: 0 2px 10px rgba(0,0,0,0.06);
+  --radius:12px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);height:100vh;overflow:hidden;
+  -webkit-font-smoothing:antialiased;background:#0d233f;
+}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* ========== 登录态背景：校园深色 ========== */
+.login-bg{
+  position:fixed;inset:0;z-index:1;
+  background:url("assets/campus-login.jpg") center/cover no-repeat,#0d233f;
+  transition:opacity .7s var(--ease), background-color .7s var(--ease);
+}
+.login-bg::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to right,
+    rgba(13,35,66,.84) 0%,
+    rgba(13,35,66,.64) 28%,
+    rgba(255,255,255,.05) 52%,
+    rgba(255,255,255,.96) 74%,
+    #ffffff 82%);
+}
+.bg-anim{animation:bgZoom 5.2s var(--ease) forwards}
+
+/* 登录态整体舞台 */
+.login-stage{
+  position:relative;z-index:2;display:grid;grid-template-columns:52% 48%;height:100vh;
+  transition:opacity .7s var(--ease), transform .7s var(--ease);
+}
+.light-sweep{
+  position:fixed;top:0;left:-20%;width:40%;height:100%;z-index:4;pointer-events:none;
+  background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.16),rgba(255,255,255,0));
+  transform:translateX(0);opacity:0;
+  animation:sweep 2.2s var(--ease) .35s forwards;
+}
+
+/* 登录页左侧 */
+.left{display:flex;flex-direction:column;justify-content:center;padding:0 clamp(28px,5vw,72px);color:#fff}
+.badge{display:inline-flex;align-items:center;gap:.7rem;margin-bottom:2rem}
+.badge .ring{
+  width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(255,255,255,.75);
+  display:grid;place-items:center;background:rgba(255,255,255,.1);
+}
+.badge .ring.school-emblem{border:0;background:transparent;overflow:hidden;width:58px;height:58px}.badge .ring.school-emblem img{width:100%;height:100%;object-fit:contain;display:block}
+.badge .sch{font-size:1.05rem;font-weight:700;letter-spacing:.12em;line-height:1.4}
+.badge .sub{font-size:.8rem;opacity:.75;letter-spacing:.06em}
+.left h1{
+  font-family:"Noto Serif SC",serif;font-weight:900;
+  font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.25;margin-bottom:2.2rem;
+  text-shadow:0 2px 14px rgba(0,0,0,.3);
+}
+.motto{display:flex;flex-direction:column;gap:1.2rem}
+.motto .row{display:flex;align-items:baseline;gap:1rem}
+.motto .k{font-size:.9rem;letter-spacing:.3em;opacity:.85;flex:none;width:3.2em}
+.motto .v{font-family:"Noto Serif SC",serif;font-weight:700;font-size:clamp(1.3rem,2.2vw,1.7rem);letter-spacing:.18em;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.left .slogan{margin-top:2.6rem;font-size:1rem;line-height:1.9;max-width:24em;border-top:1px solid rgba(255,255,255,.28);padding-top:1.4rem}
+
+/* 登录页右侧 */
+.right{display:flex;align-items:center;justify-content:center;padding:32px 44px}
+.login{width:100%;max-width:420px}
+.login-head{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:1.6rem}
+.login-head .logo{
+  width:56px;height:56px;border-radius:16px;background:var(--blue);color:#fff;
+  display:grid;place-items:center;margin-bottom:.9rem;
+  box-shadow:0 10px 24px -10px rgba(46,95,163,.5);
+}
+.login-head .logo{width:180px;height:auto;border-radius:0;background:transparent;box-shadow:none;margin-bottom:1rem}.login-head .logo img{display:block;width:100%;height:auto;object-fit:contain}
+.login-head h2{font-size:1.5rem;font-weight:700;color:var(--ink)}
+.login-head p{font-size:.95rem;color:var(--muted);margin-top:.3rem}
+.tag-row{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:center;margin-bottom:1.6rem}
+.tag-row span{
+  font-size:.88rem;color:var(--blue);background:var(--blue-soft);
+  border:1px solid rgba(46,95,163,.16);padding:.35rem .9rem;border-radius:999px;
+}
+.field{margin-bottom:1.05rem}
+.field label{display:block;font-size:.95rem;color:#44526B;margin-bottom:.45rem;font-weight:500}
+.field .box{
+  display:flex;align-items:center;gap:.6rem;
+  background:var(--field);border:1px solid var(--hair);border-radius:12px;
+  padding:0 14px;height:52px;transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.field .box .ic{color:#93A1B8;flex:none;display:grid;place-items:center}
+.field .box input{flex:1;border:0;background:transparent;height:100%;outline:none;font-size:1rem;color:var(--ink);min-width:0}
+.field .box input::placeholder{color:#A9B4C6}
+.field .box:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(46,95,163,.12)}
+.field .box .eye{background:none;border:0;cursor:pointer;color:#93A1B8;display:grid;place-items:center;padding:.2rem}
+.field .box .eye:hover{color:var(--blue)}
+.row-opt{display:flex;align-items:center;justify-content:space-between;margin:.7rem 0 1.3rem;font-size:.92rem;color:#44526B}
+.row-opt label{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+.row-opt input{accent-color:var(--blue);width:15px;height:15px}
+.row-opt a{color:var(--blue);font-weight:500}
+.row-opt a:hover{color:var(--blue-deep)}
+.btn-login{
+  width:100%;height:54px;border:0;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,var(--blue),var(--blue-deep));
+  color:#fff;font-size:1.05rem;font-weight:700;letter-spacing:.08em;
+  transition:transform .15s,box-shadow .2s,opacity .2s;
+}
+.btn-login:hover{box-shadow:0 14px 28px -14px rgba(46,95,163,.65);transform:translateY(-1px)}
+.btn-login:active{transform:none}
+.btn-login:disabled{opacity:0.75;cursor:not-allowed;transform:none;box-shadow:none}
+.login-foot{margin-top:1.2rem;text-align:center;font-size:.88rem;color:#98A3B8;line-height:1.7}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-login.loading{display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-login.loading::before{
+  content:"";width:16px;height:16px;border:2px solid #ffffff44;border-top-color:#fff;
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+
+/* ========== 登录态退场动画 ========== */
+@keyframes loginStageOut{
+  from{opacity:1;transform:translateY(0)}
+  to{opacity:0;transform:translateY(-30px)}
+}
+@keyframes loginBgOut{from{opacity:1}to{opacity:0}}
+.login-stage.is-leaving{animation:loginStageOut .7s var(--ease) forwards}
+.login-bg.is-leaving{animation:loginBgOut .7s var(--ease) forwards}
+
+/* ========== 登录成功后的空白工作台容器（保留进入/退出动画，删除所有admin、教师页面内容） ========== */
+.workbench-layer{
+  position:fixed;inset:0;z-index:3;
+  background:#f6f8fc;overflow:hidden;
+  opacity:0;visibility:hidden;transform:translateY(24px);
+  transition:opacity .7s var(--ease), visibility .7s var(--ease), transform .7s var(--ease);
+}
+.workbench-layer.is-entering{opacity:1;visibility:visible;transform:translateY(0)}
+.dashboard{display:flex;height:100%;font-family:"Noto Sans SC",sans-serif;color:#1b2a41}.dash-nav{width:230px;background:#102945;color:#dbe7f7;padding:24px 16px;display:flex;flex-direction:column}.dash-brand{display:flex;align-items:center;gap:10px;padding:0 8px 34px}.dash-brand strong,.dash-brand small{display:block}.dash-brand strong{color:white;font-size:15px}.dash-brand small{color:#91a7c2;font-size:11px;margin-top:4px}.dash-logo{width:36px;height:36px;border-radius:11px;background:#3e78bd;color:white;display:grid;place-items:center;font-weight:800;font-size:19px}.dash-nav nav{display:grid;gap:7px}.dash-nav nav a{padding:12px;border-radius:9px;color:#9eb2cb;font-size:13px}.dash-nav nav a.active,.dash-nav nav a:hover{background:#214a79;color:white}.dash-bottom{margin-top:auto}.credit-mini{background:rgba(255,255,255,.07);padding:13px;border-radius:10px;margin-bottom:18px}.credit-mini small{display:block;color:#9eb2cb;font-size:11px}.credit-mini strong{display:block;color:#fff;font-size:17px;margin:7px 0 10px}.credit-mini em{font-size:10px;color:#8fa5bf;font-style:normal;font-weight:400}.credit-mini div{height:4px;background:#294769;border-radius:9px}.credit-mini i{display:block;width:84%;height:100%;background:#6ca6e6;border-radius:9px}.dash-main{flex:1;background:#f6f8fc;padding:30px 42px;overflow:auto}.dash-top,.section-head,.panel-head{display:flex;justify-content:space-between;align-items:center}.dash-top{align-items:flex-start;margin-bottom:26px}.eyebrow{font-size:10px;letter-spacing:.18em;color:#7890ad;font-weight:700}.dash-top h2{font-size:25px;margin:8px 0 4px}.dash-top p,.section-head p{color:#75839a;font-size:13px}.dash-user{display:flex;align-items:center;gap:10px}.avatar{width:36px;height:36px;display:grid;place-items:center;background:#dceafa;color:#2e5fa3;border-radius:50%;font-weight:700}.dash-user strong,.dash-user small{display:block}.dash-user small{font-size:11px;color:#8a98aa;margin-top:3px}.dash-user button{border:0;background:transparent;color:#8a98aa;font-size:21px}.dash-hero{min-height:215px;border-radius:18px;background:linear-gradient(120deg,#e7f0fb,#f5f8fc);padding:28px 34px;display:flex;justify-content:space-between;overflow:hidden;margin-bottom:30px}.hero-kicker{font-size:11px;color:#487bb6;font-weight:700;letter-spacing:.12em}.dash-hero h1{font-size:28px;line-height:1.35;margin:10px 0;color:#173252}.dash-hero h1 b{color:#2e5fa3}.dash-hero p{font-size:13px;color:#73839a;margin-bottom:18px}.primary-cta{border:0;border-radius:8px;background:#2e5fa3;color:white;padding:11px 17px;font-weight:700;cursor:pointer}.hero-orbit{width:250px;position:relative}.orbit-ring{position:absolute;border:1px solid #b7d1ec;border-radius:50%;left:20px;top:-40px}.r1{width:230px;height:230px}.r2{width:170px;height:170px;left:50px;top:-10px}.orbit-core{position:absolute;left:99px;top:67px;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#2e5fa3;font-size:22px;font-weight:800;box-shadow:0 10px 30px #b9cee4}.orbit-dot{position:absolute;width:31px;height:31px;border-radius:50%;background:white;display:grid;place-items:center;color:#487bb6;font-size:12px;font-weight:700;box-shadow:0 4px 12px #cbd9e8}.d1{left:12px;top:47px}.d2{right:10px;top:74px}.d3{left:112px;bottom:5px}.section-head{margin-bottom:14px}.section-head h3,.panel-head h3{font-size:17px}.section-head a,.panel-head a{font-size:12px;color:#4b78ad}.cap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:28px}.cap-grid button{position:relative;text-align:left;border:1px solid #e4eaf2;background:#fff;border-radius:12px;padding:16px;min-height:130px;cursor:pointer}.cap-grid strong,.cap-grid small{display:block}.cap-grid strong{font-size:14px;margin:12px 0 5px}.cap-grid small{font-size:11px;color:#8b98aa}.cap-grid i{position:absolute;right:14px;bottom:15px;color:#8ca4c1;font-style:normal}.cap-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:17px}.blue{background:#e6f0fb;color:#3c79ba}.purple{background:#eeeafd;color:#7566be}.orange{background:#fff0df;color:#ce8a3f}.green{background:#e2f4ed;color:#3b9b75}.lower-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:#fff;border:1px solid #e4eaf2;border-radius:12px;padding:18px}.task-row,.skill-chip{display:flex;align-items:center;gap:11px;border-top:1px solid #eef2f7;padding:13px 0}.task-row div,.skill-chip div{flex:1}.task-row strong,.task-row small,.skill-chip strong,.skill-chip small{display:block}.task-row strong,.skill-chip strong{font-size:12px}.task-row small,.skill-chip small{font-size:11px;color:#98a3b2;margin-top:4px}.task-file{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;font-weight:700;font-size:12px}.blue-bg{background:#e7f0fb;color:#4a83c2}.orange-bg{background:#fff0df;color:#c78848}.purple-bg{background:#eeeafd;color:#7666bc}.done,.working{font-size:10px;padding:4px 7px;border-radius:5px}.done{background:#e6f5ed;color:#3c9a6f}.working{background:#fff4df;color:#c88837}.skill-chip>span{width:28px;height:28px;background:#e9f1fb;color:#447cb9;border-radius:7px;display:grid;place-items:center}.skill-chip button{border:1px solid #cbdbea;background:#fff;color:#3f73aa;border-radius:6px;padding:5px 8px;font-size:11px}@media(max-width:900px){.dash-nav{width:190px}.dash-main{padding:24px}.cap-grid{grid-template-columns:repeat(2,1fr)}.hero-orbit{opacity:.55}}@media(max-width:600px){.dash-nav{display:none}.dash-main{padding:22px 16px}.dash-top h2{font-size:21px}.dash-hero{padding:22px}.dash-hero h1{font-size:23px}.hero-orbit{display:none}.cap-grid,.lower-grid{grid-template-columns:1fr}}
+
+/* ========== 动画定义 ========== */
+@keyframes bgZoom{
+  0%{transform:scale(1.09);filter:brightness(.72)}
+  100%{transform:scale(1);filter:brightness(1)}
+}
+@keyframes sweep{
+  0%{opacity:0;transform:translateX(0)}
+  40%{opacity:1}
+  100%{opacity:0;transform:translateX(420%)}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:none}
+}
+@keyframes formIn{
+  from{opacity:0;transform:translateY(34px) scale(.985)}
+  to{opacity:1;transform:none}
+}
+@keyframes btnIn{
+  from{opacity:0;transform:scale(.94)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes breath{
+  0%,100%{box-shadow:0 0 0 0 rgba(46,95,163,.45)}
+  50%{box-shadow:0 0 0 12px rgba(46,95,163,0)}
+}
+.enter{opacity:0;animation:fadeUp .8s var(--ease) forwards}
+.enter.d1{animation-delay:.5s}
+.enter.d2{animation-delay:.72s}
+.enter.d3{animation-delay:.95s}
+.enter.d4{animation-delay:1.18s}
+.enter.d5{animation-delay:1.4s}
+.enter.d6{animation-delay:1.62s}
+.form-card{opacity:0;animation:formIn .9s var(--ease) .55s forwards}
+.btn-anim{opacity:0;animation:btnIn .7s var(--ease) 1.85s forwards}
+.btn-anim::after{content:"";animation:breath 2.6s var(--ease) 2.5s infinite}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .login-bg{opacity:1}
+  .login-stage{opacity:1;transform:none}
+  .workbench-layer{opacity:1;visibility:visible;transform:none}
+  .light-sweep{display:none}
+}
+@media(max-width:920px){
+  body{overflow:auto}
+  .login-bg::after{background:linear-gradient(to bottom,rgba(13,35,66,.8) 0%,rgba(13,35,66,.72) 55%,rgba(255,255,255,.96) 72%,#fff 82%)}
+  .login-stage{grid-template-columns:1fr;height:auto;min-height:100vh}
+  .left{padding:56px 26px 40px}
+  .right{padding:24px 22px 56px}
+  .login-head .logo{display:none}
+}
+@media(max-width:540px){
+}
+.rail-nav{width:78px!important;padding:22px 12px!important;transition:width .24s ease;overflow:hidden}.rail-nav:hover,.rail-nav:focus-within{width:230px!important}.rail-nav .dash-brand{padding:0 1px 34px;min-width:202px}.rail-nav .dash-brand>div{opacity:0;transition:opacity .18s ease}.rail-nav:hover .dash-brand>div,.rail-nav:focus-within .dash-brand>div{opacity:1}.rail-nav nav a{display:flex;align-items:center;gap:12px;white-space:nowrap;padding:11px 12px}.rail-icon{width:22px;flex:0 0 22px;text-align:center;font-size:18px;color:#9eb7d1}.rail-label{opacity:0;transition:opacity .18s ease}.rail-nav:hover .rail-label,.rail-nav:focus-within .rail-label{opacity:1}.rail-nav .credit-mini{min-width:202px;opacity:0;transition:opacity .18s ease}.rail-nav:hover .credit-mini,.rail-nav:focus-within .credit-mini{opacity:1}.rail-nav .logout-btn{min-width:202px}.rail-nav .dash-bottom{margin-left:-1px;margin-right:-1px}
+.rail-nav{width:92px!important;height:calc(100% - 28px);margin:14px 0 14px 14px;padding:22px 12px!important;border-radius:20px;background:linear-gradient(165deg,#17385d,#102945);box-shadow:0 16px 34px rgba(31,60,91,.18),inset 0 1px 0 rgba(255,255,255,.06)}.rail-nav:hover,.rail-nav:focus-within{width:244px!important}.dash-main{border-radius:22px 0 0 22px;margin:14px 14px 14px 0;padding:30px 42px}.rail-nav .dash-brand{padding-left:2px}.rail-nav nav a{border-radius:10px}.rail-nav nav a.active{box-shadow:inset 3px 0 #8cc2f1,0 8px 18px rgba(6,24,45,.18)}
+/* Sidebar expansion is controlled only by the explicit toggle. */
+.rail-nav,.rail-nav:hover,.rail-nav:focus-within{width:244px!important;flex-shrink:0}
+.rail-nav .dash-brand>div,.rail-nav .rail-label,.rail-nav .credit-mini{opacity:1}
+.rail-nav.is-collapsed,.rail-nav.is-collapsed:hover,.rail-nav.is-collapsed:focus-within{width:92px!important}
+.rail-nav.is-collapsed .dash-brand>div,.rail-nav.is-collapsed .rail-label{opacity:0;pointer-events:none}
+.rail-nav.is-collapsed .credit-mini{visibility:hidden}
+.nav-toggle{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:40px;margin-bottom:16px;border:1px solid #56718d;border-radius:9px;background:transparent;color:#e4eef9;cursor:pointer;font:inherit}
+.nav-toggle svg{width:18px;height:18px;flex-shrink:0;transition:transform .2s ease-out}
+.is-collapsed .nav-toggle svg{transform:rotate(180deg)}
+.is-collapsed .toggle-label{display:none}
+.rail-nav .logout-btn{min-width:0;width:100%;min-height:38px;border-radius:8px;border:1px solid #56718d;background:transparent;color:#e4eef9;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.rail-nav,.nav-toggle svg{transition:none}}
+@media(max-width:600px){.rail-nav{display:flex}.dash-main{min-width:0}.hero-orbit,.dash-user{display:none}}
+/* Light workspace navigation */
+.rail-nav,.rail-nav:hover,.rail-nav:focus-within{background:#f7f9fc;color:#344b65;box-shadow:0 4px 18px rgba(27,42,65,.06)}
+.rail-nav .dash-brand strong{color:#243f60}
+.rail-nav .dash-brand small{color:#596f87}
+.rail-nav nav a{color:#4e637b;transition:background-color .18s ease-out,color .18s ease-out}
+.rail-nav nav a:hover{background:#eaf0f7;color:#264f81}
+.rail-nav nav a.active{background:#dfeaf8;color:#254f85;box-shadow:none;font-weight:600}
+.rail-nav .rail-icon{color:inherit}
+.rail-nav .credit-mini{background:#eaf0f7}
+.rail-nav .credit-mini small,.rail-nav .credit-mini em{color:#526880}
+.rail-nav .credit-mini strong{color:#284c77}
+.rail-nav .credit-mini div{background:#cbd9eb}
+.rail-nav .credit-mini i{background:#507bad}
+.rail-nav .nav-toggle,.rail-nav .logout-btn{border-color:#d1dce9;background:transparent;color:#405b79}
+.rail-nav .nav-toggle:hover,.rail-nav .logout-btn:hover{background:#e7eef7}
+.rail-nav :focus-visible{outline:2px solid #2e5fa3;outline-offset:2px}
+
+/* Refined workspace sidebar */
+.rail-nav,.rail-nav:hover,.rail-nav:focus-within{position:relative;width:264px!important;height:100%;margin:0;padding:28px 16px 16px!important;border-radius:0;background:#f3f5f8;box-shadow:none;border-right:1px solid #e4e9f0;overflow:visible}
+.rail-nav .dash-brand{padding:8px 0 32px;min-width:0;gap:10px;min-height:112px;align-items:flex-start}
+.rail-nav .dash-brand>div{white-space:nowrap}.rail-nav .dash-logo{width:38px;height:38px}
+.rail-nav .dash-brand strong{font-size:13px!important}.rail-nav .dash-brand small{font-size:11px;margin-top:7px}
+.rail-nav .nav-toggle{position:absolute;right:10px;top:8px;width:28px;min-height:28px;margin:0;border:0;border-radius:6px;color:#66798e}
+.rail-nav nav a{height:44px;margin:3px 0;padding:0 12px;gap:12px;font-size:14px;border-radius:8px}
+.rail-nav .rail-icon{width:20px;height:20px;flex:0 0 20px}
+.rail-nav .dash-bottom{position:relative;margin-top:auto;margin-left:0;margin-right:0;border-top:1px solid #e0e6ee;padding-top:16px}
+.credit-line{display:flex;justify-content:space-between;align-items:center;padding:0 8px 16px;color:#52657b;font-size:12px;white-space:nowrap}.credit-line small{font-size:10px;color:#66798e}.credit-line strong{color:#324d6d;font-variant-numeric:tabular-nums}
+.account-button{width:100%;display:flex;align-items:center;gap:10px;padding:9px 6px;border:0;border-radius:9px;background:transparent;color:#354c66;text-align:left;cursor:pointer}.account-button:hover{background:#e6edf6}.account-copy{flex:1;white-space:nowrap}.account-copy strong,.account-copy small{display:block}.account-copy strong{font-size:13px}.account-copy small{font-size:11px;color:#576c84;margin-top:4px}.account-more{font-size:20px}
+.account-popover{position:absolute;bottom:70px;left:0;width:230px;background:#fff;padding:14px;border:1px solid #dde5ee;border-radius:12px;box-shadow:0 8px 24px rgba(25,42,64,.12);z-index:20}.account-popover p{font-size:12px;color:#52657b;margin-bottom:12px}.account-popover[hidden]{display:none}
+.rail-nav.is-collapsed,.rail-nav.is-collapsed:hover,.rail-nav.is-collapsed:focus-within{width:80px!important}.rail-nav.is-collapsed .dash-brand>div,.rail-nav.is-collapsed .rail-label,.rail-nav.is-collapsed .credit-line,.rail-nav.is-collapsed .account-copy,.rail-nav.is-collapsed .account-more{display:none}.rail-nav.is-collapsed .dash-brand{justify-content:center}.rail-nav.is-collapsed .account-button{justify-content:center;padding:9px 0}.dash-main{margin:0;border-radius:0;min-width:0}
+</style>
+<link rel="stylesheet" href="workspace.css"></head>
+<body>
+
+<!-- 登录态背景 -->
+<div class="login-bg bg-anim" id="loginBg" role="presentation" aria-hidden="true"></div>
+<div class="light-sweep" aria-hidden="true"></div>
+
+<!-- 登录舞台 -->
+<div class="login-stage" id="loginStage">
+  <aside class="left">
+    <div class="badge enter d1">
+      <span class="ring school-emblem"><img src="assets/school-emblem.png" alt="西南大学附属中学校徽" /></span>
+      <span>
+        <span class="sch" style="display:block">西南大学附属中学两江中学</span>
+        <span class="sub">智能教育助手</span>
+      </span>
+    </div>
+    <h1 class="enter d2">让 AI 成为教师<br>日常教学与办公的智能助手</h1>
+    <div class="motto enter d3">
+      <div class="row"><span class="k">校训</span><span class="v">行己有耻，君子不器</span></div>
+      <div class="row"><span class="k">校风</span><span class="v">崇德 · 尚美 · 创新 · 笃行</span></div>
+    </div>
+    <p class="slogan enter d4">智能备课 · 作业辅助 · 学情分析 · 文档生成，为一线教师减负增效，把时间还给教学。</p>
+  </aside>
+
+  <main class="right">
+    <form class="login form-card" id="loginForm" novalidate>
+      <div class="login-head">
+        <h2>平台登录</h2>
+        <p>教师账号登录入口</p>
+      </div>
+      <div class="tag-row enter d5">
+        <span>AI备课</span><span>命题审题</span><span>知识库</span><span>多模态创作</span>
+      </div>
+      <div class="field enter d5">
+        <label for="username">账号</label>
+        <div class="box">
+          <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 00-3-3.87" /></svg></span>
+          <input type="text" id="username" name="username" placeholder="请输入教师账号" autocomplete="username">
+        </div>
+      </div>
+      <div class="field enter d5">
+        <label for="password">登录密码</label>
+        <div class="box">
+          <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 018 0v4" /></svg></span>
+          <input type="password" id="password" name="password" placeholder="请输入登录密码" autocomplete="current-password">
+          <button type="button" class="eye" id="eye" aria-label="显示密码">
+            <svg id="eyeOpen" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" /><circle cx="12" cy="12" r="3" /></svg>
+            <svg id="eyeClose" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19M14.12 14.12a3 3 0 11-4.24-4.24" /><path d="M1 1l22 22" /></svg>
+          </button>
+        </div>
+      </div>
+      <div class="row-opt enter d6">
+        <label><input type="checkbox" id="remember" checked> 记住账号</label>
+        <a href="#" id="forgot">忘记密码？</a>
+      </div>
+      <button type="submit" class="btn-login btn-anim" id="loginBtn">登 录 系 统</button>
+      <p class="login-foot enter d6">演示账号：teacher</p>
+    </form>
+  </main>
+</div>
+
+<!-- 工作台容器，清空原有教师/管理员页面，仅保留容器，登录动画、退出登录逻辑保留 -->
+<div class="workbench-layer" id="workbenchLayer">
+  <div id="dashboardContainer" class="dashboard">
+    <aside class="dash-nav rail-nav" id="workspaceNav">
+      <button class="nav-toggle" id="navToggle" type="button" aria-controls="workspaceNav" aria-expanded="true" aria-label="收起导航"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+      <div class="dash-brand"><span class="dash-logo"><img src="assets/school-emblem.png" alt="西南大学附属中学校徽"></span><div><strong>西南大学附属中学</strong><span class="campus-name">两江校区</span></div></div>
+      <div class="brand-product">智能教育助手</div>
+      <button class="new-teaching-task" id="newTeachingTask" type="button" aria-label="新建教学任务"><span aria-hidden="true">＋</span><span class="new-task-label">新建教学任务</span></button>
+      <nav><a class="active" href="#"><span class="rail-icon emoji-icon" aria-hidden="true">🏠</span><span class="rail-label">AI 工作台</span></a><a href="#"><span class="rail-icon emoji-icon" aria-hidden="true">🤖</span><span class="rail-label">AI 助手</span></a><a href="#"><span class="rail-icon emoji-icon" aria-hidden="true">⚙️</span><span class="rail-label">Skill 中心</span></a><a href="#"><span class="rail-icon emoji-icon" aria-hidden="true">🎨</span><span class="rail-label">AI 创作中心</span></a><a href="#" id="pluginsNav"><span class="rail-icon emoji-icon" aria-hidden="true">🧩</span><span class="rail-label">插件</span></a></nav>
+      <section class="sidebar-skills" aria-label="常用 Skill 快捷入口"><div class="sidebar-section-head"><span>常用 Skill</span><small>示例</small></div><button type="button" data-quick-skill="0"><span class="shortcut-mark">📝</span><span><strong>课堂教学设计</strong><small>学校公共</small></span><span class="shortcut-arrow" aria-hidden="true">↗</span></button><button type="button" data-quick-skill="1"><span class="shortcut-mark">✅</span><span><strong>试题表达检查</strong><small>学校公共</small></span><span class="shortcut-arrow" aria-hidden="true">↗</span></button><button type="button" data-quick-skill="2"><span class="shortcut-mark">📚</span><span><strong>教学内容梳理</strong><small>我的 Skill</small></span><span class="shortcut-arrow" aria-hidden="true">↗</span></button></section>
+      <div class="dash-bottom"><div class="credit-line"><span>本月积分 <small>演示</small></span><strong>8,420</strong></div><div class="account-popover" id="accountPopover" hidden><p>李老师 · 高中语文</p><button class="logout-btn" id="logoutBtn" type="button">退出登录</button></div><button class="account-button" id="accountButton" type="button" aria-expanded="false" aria-controls="accountPopover" aria-label="打开教师账号菜单"><span class="avatar">李</span><span class="account-copy"><strong>李老师</strong><small>高中语文 · 教师</small></span><span class="account-more" aria-hidden="true">···</span></button></div>
+    </aside>
+    <main class="dash-main"></main>
+  </div>
+</div>
+
+<script>
+(function(){
+  var form=document.getElementById('loginForm');
+  const navToggle=document.getElementById('navToggle');
+  const workspaceNav=document.getElementById('workspaceNav');
+  navToggle.addEventListener('click',function(){
+    const collapsed=workspaceNav.classList.toggle('is-collapsed');
+    navToggle.setAttribute('aria-expanded',String(!collapsed));
+    navToggle.setAttribute('aria-label',collapsed?'展开导航':'收起导航');
+    navToggle.title=collapsed?'展开导航':'收起导航';
+  });
+
+  const accountButton=document.getElementById('accountButton');
+  const accountPopover=document.getElementById('accountPopover');
+  function closeAccount(){accountPopover.hidden=true;accountButton.setAttribute('aria-expanded','false');}
+  accountButton.addEventListener('click',()=>{accountPopover.hidden=!accountPopover.hidden;accountButton.setAttribute('aria-expanded',String(!accountPopover.hidden));});
+  document.addEventListener('click',e=>{if(!accountButton.contains(e.target)&&!accountPopover.contains(e.target))closeAccount();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!accountPopover.hidden){closeAccount();accountButton.focus();}});
+
+  var toastEl;
+  var loginStage=document.getElementById('loginStage');
+  var loginBg=document.getElementById('loginBg');
+  var workbenchLayer=document.getElementById('workbenchLayer');
+  var loginBtn=document.getElementById('loginBtn');
+
+  function toast(msg){
+    if(!toastEl){
+      toastEl=document.createElement('div');
+      toastEl.style.cssText='position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#23497F;color:#fff;padding:.8rem 1.4rem;border-radius:10px;font-size:.9rem;box-shadow:0 12px 30px -12px rgba(35,73,127,.6);z-index:400;opacity:0;transition:opacity .3s;max-width:86vw;text-align:center';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent=msg;
+    toastEl.style.opacity=1;
+    clearTimeout(toastEl._t);
+    toastEl._t=setTimeout(function(){toastEl.style.opacity=0;},2400);
+  }
+
+  // 退出登录
+  function logout(){
+    closeAccount();
+    workbenchLayer.classList.remove('is-entering');
+    setTimeout(()=>{
+      loginStage.classList.remove('is-leaving');
+      loginBg.classList.remove('is-leaving');
+    },300);
+    toast("已退出登录");
+  }
+
+  // 表单提交登录
+  form.onsubmit = function(e){
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    loginBtn.classList.add('loading');
+    loginBtn.disabled = true;
+
+    setTimeout(()=>{
+      if(username !== 'teacher'){
+        toast('账号错误，请输入 teacher');
+        loginBtn.classList.remove('loading');
+        loginBtn.disabled = false;
+        return;
+      }
+      // 登录退场动画
+      loginStage.classList.add('is-leaving');
+      loginBg.classList.add('is-leaving');
+      setTimeout(()=>{
+        workbenchLayer.classList.add('is-entering');
+        document.getElementById('logoutBtn').onclick = logout;
+      },700);
+      loginBtn.classList.remove('loading');
+      loginBtn.disabled = false;
+    },1000)
+  }
+
+  // 密码显隐切换
+  const eyeBtn = document.getElementById('eye');
+  const passwordInput = document.getElementById('password');
+  const eyeOpen = document.getElementById('eyeOpen');
+  const eyeClose = document.getElementById('eyeClose');
+  eyeBtn.onclick = function(){
+    if(passwordInput.type==='password'){
+      passwordInput.type='text';
+      eyeOpen.style.display='none';
+      eyeClose.style.display='block';
+    }else{
+      passwordInput.type='password';
+      eyeOpen.style.display='block';
+      eyeClose.style.display='none';
+    }
+  }
+})();
+</script>
+<script src="settings.js"></script><script src="chat.js"></script><script src="skills.js"></script><script src="workspace.js"></script></body>
+</html>
+<!-- （注：内容由AI生成） -->
+
+
+
+

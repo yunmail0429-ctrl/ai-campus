@@ -1,0 +1,12 @@
+FROM ghcr.io/huggingface/text-embeddings-inference:cpu-1.9 AS source
+FROM busybox:musl AS probe
+
+FROM gcr.io/distroless/cc-debian13:nonroot
+COPY --from=source /usr/local/bin/text-embeddings-router /usr/local/bin/text-embeddings-router
+COPY --from=source /usr/local/libfakeintel.so /usr/local/libfakeintel.so
+COPY --from=source /usr/lib/llvm-14/lib/libomp.so.5 /usr/local/lib/libiomp5.so
+COPY --from=probe /bin/busybox /usr/local/bin/busybox
+ENV HUGGINGFACE_HUB_CACHE=/data PORT=80 RAYON_NUM_THREADS=4 \
+    LD_PRELOAD=/usr/local/libfakeintel.so LD_LIBRARY_PATH=/usr/local/lib
+EXPOSE 80
+ENTRYPOINT ["/usr/local/bin/text-embeddings-router"]

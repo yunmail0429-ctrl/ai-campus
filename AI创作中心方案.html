@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 创作中心 · 三种布局提案</title>
+<link rel="stylesheet" href="studio-concepts.css">
+</head>
+<body>
+<header class="review-bar"><div class="review-title"><strong>AI 创作中心</strong><span>布局提案 / 交互原型</span></div><nav aria-label="切换设计方案" id="variants"><button data-variant="a" aria-pressed="true"><b>A</b> 灵感工作台 <small>推荐</small></button><button data-variant="b" aria-pressed="false"><b>B</b> 专注创作台</button><button data-variant="c" aria-pressed="false"><b>C</b> 轻量创作页</button></nav><div class="review-actions"><a class="reference-button" href="index.html#studio">查看已更新的创作中心 →</a><button class="reference-button" id="references">设计思路与参考</button></div></header>
+<div id="app"></div>
+<footer class="review-foot"><span id="concept-note"></span><span>界面演示 · 示例作品与积分 · 不调用生成服务</span></footer>
+<dialog id="reference-dialog"><header><h2>三个方案，三种开始方式</h2><button id="close-references" aria-label="关闭参考说明">关闭</button></header><p>基于现有六类创作能力重新组织页面，重点解决入口、参数、作品记录争抢注意力的问题。</p><article><h3>A · 灵感工作台 / 推荐</h3><p>先选创作类型，再表达需求；下方用教学场景和作品帮助启动。信息丰富、容易发现功能，适合教师日常使用。</p><a href="https://www.canva.com/visual-suite/" target="_blank" rel="noreferrer">参考 Canva Visual Suite：多格式创作与模板入口 ↗</a></article><article><h3>B · 专注创作台</h3><p>配置、预览、任务分区，参数修改不离开作品。适合明确目标和重复创作，首次使用需要更多理解。</p><a href="https://linear.app/now/behind-the-latest-design-refresh" target="_blank" rel="noreferrer">参考 Linear：弱化导航、清晰层级与稳定工具位置 ↗</a></article><article><h3>C · 轻量创作页</h3><p>以一个输入框开始，按需展开高级选项。上手最轻松，但批量管理和参数可见性弱于前两种方案。</p><a href="https://www.notion.com/product/ai" target="_blank" rel="noreferrer">参考 Notion AI：以需求为中心的工作区 ↗</a></article><p class="muted">研究日期：2026-09-23。以上为布局借鉴与本项目的原创设计，不是对参考产品的复刻。上传仅展示文件名，生成仅模拟状态。</p></dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="studio-concepts.js"></script>
+</body></html>

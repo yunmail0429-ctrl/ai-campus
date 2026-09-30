@@ -1,0 +1,45 @@
+# Local environments and generated output
+**/.venv/
+**/node_modules/
+**/.next/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.pytest-temp/
+**/*.egg-info/
+**/test-results/
+**/playwright-report/
+**/local-data/
+local-data/
+artifacts/
+**/*.tsbuildinfo
+
+# Local configuration, credentials, and databases
+**/.env
+**/.env.*
+!**/.env.example
+**/*.env
+**/credentials.txt
+**/*.db
+**/*.db-*
+**/*.sqlite
+**/*.sqlite3
+**/*.dump
+**/*.tar.gz
+
+# Generated reports and local previews
+docs/*.json
+docs/RELEASE-AUDIT-*.md
+docs/RELEASE-VALIDATION-*.md
+docs/VALIDATION-*.md
+docs/ziyor-production-deployment.md
+*.png
+*.jpg
+*.jpeg
+*.webp
+!assets/*.png
+!assets/*.jpg
+!assets/*.webp
+!frontend/public/assets/*.png
+!frontend/public/assets/*.jpg
+!frontend/public/assets/*.webp

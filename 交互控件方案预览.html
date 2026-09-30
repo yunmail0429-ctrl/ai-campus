@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>校园 AI · 按钮与下拉框交互方案</title>
+  <style>
+    :root { color-scheme:light; font-family:"Microsoft YaHei","PingFang SC",sans-serif; --ink:#243a56; --muted:#61758e; --line:#d7e3f0; --blue:#2e5fa3; --blue-hover:#244f8a; --tint:#eaf2fd; --page:#eef5fb; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--page); }
+    button,select,textarea { font:inherit; }
+    button { cursor:pointer; }
+    button:disabled { cursor:not-allowed; opacity:.56; }
+    button:focus-visible,select:focus-visible,textarea:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
+    svg { fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .shell { min-height:100dvh; display:grid; grid-template-columns:268px minmax(0,1fr); gap:14px; padding:14px; }
+    .aside,.main { background:#fbfdff; border:1px solid #dde8f3; border-radius:20px; box-shadow:0 10px 28px #4b739311; }
+    .aside { padding:22px 14px; display:flex; flex-direction:column; }
+    .brand { display:flex; align-items:center; gap:10px; padding:0 8px 19px; font-weight:700; font-size:14px; }
+    .brand-mark { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; color:white; background:#2e5fa3; }
+    .brand-mark svg { width:20px; }
+    .aside-label { padding:12px 9px 8px; font-size:11px; color:#7b8da2; }
+    .button { min-height:40px; display:inline-flex; justify-content:center; align-items:center; gap:8px; padding:9px 14px; border-radius:10px; border:1px solid transparent; font-size:13px; font-weight:600; white-space:nowrap; transition:background .18s,border-color .18s,color .18s,box-shadow .18s,transform .18s; }
+    .button svg { width:17px; height:17px; }
+    .button:hover:not(:disabled) { transform:translateY(-1px); }
+    .button:active:not(:disabled) { transform:translateY(0); }
+    .button-primary { color:white; background:var(--blue); box-shadow:0 4px 11px #24558e27; }
+    .button-primary:hover:not(:disabled) { background:var(--blue-hover); box-shadow:0 7px 16px #24558e36; }
+    .button-secondary { color:#2d5687; background:#fff; border-color:#bfd3eb; }
+    .button-secondary:hover:not(:disabled) { background:#f0f6fe; border-color:#8eafda; }
+    .button-quiet { color:#476582; background:transparent; border-color:transparent; }
+    .button-quiet:hover:not(:disabled) { background:#eaf2fb; }
+    .button-danger { color:#ad4651; background:#fff; border-color:#efd2d5; }
+    .button-danger:hover:not(:disabled) { background:#fff0f1; border-color:#e4adb3; }
+    .button-icon { width:40px; padding:0; color:#617b98; background:transparent; }
+    .button-icon:hover:not(:disabled) { background:#eaf2fb; color:var(--blue); }
+    .new-button { width:100%; justify-content:flex-start; padding-left:14px; margin-bottom:16px; }
+    .nav-item { display:flex; align-items:center; gap:8px; padding:11px 10px; margin-top:4px; border-radius:9px; color:#627995; font-size:12px; }
+    .nav-item.active { color:#245786; background:#eaf3fc; font-weight:600; }
+    .nav-item svg { width:16px; height:16px; flex:none; }
+    .aside-bottom { margin-top:auto; border-top:1px solid #e6edf4; padding:17px 8px 0; color:#6c829a; font-size:11px; line-height:1.6; }
+    .main { min-width:0; padding:0 0 28px; }
+    .main-header { display:flex; justify-content:space-between; gap:14px; align-items:center; border-bottom:1px solid #e4ebf3; padding:20px clamp(20px,4vw,50px); }
+    .main-header h1 { margin:0; font-size:21px; }
+    .main-header p { margin:5px 0 0; font-size:12px; color:var(--muted); }
+    .main-header-actions { display:flex; gap:8px; align-items:center; }
+    .content { max-width:1000px; margin:0 auto; padding:30px clamp(20px,4vw,50px) 0; }
+    .intro { margin-bottom:22px; }
+    .intro h2 { font-size:19px; margin:0 0 7px; }
+    .intro p { color:var(--muted); font-size:13px; line-height:1.7; margin:0; }
+    .composer { background:#fff; border:1px solid #bfd3eb; border-radius:14px; padding:17px; box-shadow:0 7px 22px #426f9c0e; }
+    textarea { width:100%; min-height:115px; resize:vertical; display:block; border:0; outline:0; background:transparent; color:var(--ink); line-height:1.7; font-size:14px; }
+    textarea::placeholder { color:#7a8da2; }
+    .composer-controls { display:flex; flex-wrap:wrap; align-items:end; gap:10px; padding-top:13px; border-top:1px solid #e9eff5; }
+    .field { display:grid; gap:7px; color:#70849b; font-size:11px; }
+    .field select { min-width:150px; }
+    .send { margin-left:auto; }
+    .file-label { color:#687e96; margin:9px 2px 0; font-size:11px; }
+    .demo-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr); gap:18px; margin-top:22px; }
+    .panel { border:1px solid #dfe8f2; border-radius:13px; background:white; min-width:0; }
+    .panel-header { border-bottom:1px solid #e9eff5; padding:15px 17px; }
+    .panel h3 { font-size:14px; margin:0; }
+    .panel p { font-size:11px; color:#71869d; margin:5px 0 0; line-height:1.6; }
+    .panel-body { padding:18px; }
+    .state-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .state-caption { margin:15px 0 7px; color:#70849b; font-size:11px; }
+    .select-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+    select { width:100%; min-height:40px; padding:9px 11px; color:#2d527f; background:#fff; border:1px solid #bfd3eb; border-radius:9px; font-size:12px; cursor:pointer; }
+    select:hover { background:#f8fbff; border-color:#8eafda; }
+    select:disabled { opacity:.55; cursor:not-allowed; }
+    select > button { all:unset; display:contents; }
+    select .choice-title { display:block; font-weight:600; letter-spacing:.01em; }
+    select .choice-detail { display:block; margin-top:3px; color:#7790a9; font-size:10px; line-height:1.5; font-weight:400; }
+    selectedcontent .choice-detail { display:none; }
+    selectedcontent .choice-title { font-weight:600; }
+    @supports (appearance:base-select) {
+      select,select::picker(select) { appearance:base-select; }
+      select::picker-icon { color:#54769a; margin-inline-start:10px; }
+      select::picker(select) { max-height:min(300px,55vh); overflow-y:auto; padding:6px; border:1px solid #d3e0ef; border-radius:11px; background:white; box-shadow:0 13px 28px #254d7930; }
+      select option { display:grid; grid-template-columns:16px minmax(0,1fr); align-content:center; column-gap:5px; min-height:58px; padding:9px 10px; color:#2d527f; border-radius:7px; font-size:12px; }
+      select option .choice-title,select option .choice-detail { grid-column:2; }
+      select option:hover,select option:focus-visible { background:#edf5ff; }
+      select option:checked { color:#23578f; background:#e5f0fc; font-weight:600; }
+      select option:disabled { color:#8b9bb0; }
+      select option::checkmark { grid-column:1; grid-row:1/3; align-self:center; color:#2e5fa3; }
+    }
+    .note { display:flex; gap:8px; align-items:start; margin-top:17px; padding:11px 12px; color:#476683; background:#f0f6fd; border-radius:8px; font-size:11px; line-height:1.6; }
+    .note svg { width:17px; height:17px; flex:none; }
+    .feedback { display:none; margin-top:18px; padding:12px 14px; border:1px solid #bddccf; border-radius:9px; color:#246849; background:#f0f9f4; font-size:12px; }
+    .feedback.visible { display:block; }
+    .research { margin-top:22px; color:#70849b; font-size:11px; line-height:1.75; }
+    .research a { color:#2e5fa3; text-underline-offset:3px; }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
+    @media (max-width:800px) { .shell { grid-template-columns:1fr; padding:8px; } .aside { display:none; } .main-header { padding:16px; } .content { padding:24px 16px 0; } .demo-grid { grid-template-columns:1fr; } }
+    @media (max-width:560px) { .main-header { align-items:start; } .main-header h1 { font-size:18px; } .main-header-actions .button-quiet { display:none; } .composer-controls { align-items:stretch; } .field { flex:1; min-width:100px; } .send { width:100%; margin:0; } .select-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute"><defs>
+    <symbol id="plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+    <symbol id="chat" viewBox="0 0 24 24"><path d="M4 5h16v12H8l-4 3zM8 10h8M8 13h5"/></symbol>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16M15 7l5 5-5 5"/></symbol>
+    <symbol id="paperclip" viewBox="0 0 24 24"><path d="m8 13 6-6a3 3 0 0 1 4 4l-8 8a5 5 0 0 1-7-7l8-8"/></symbol>
+    <symbol id="trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/></symbol>
+    <symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  </defs></svg>
+  <div class="shell">
+    <aside class="aside">
+      <div class="brand"><span class="brand-mark"><svg><use href="#chat"/></svg></span>AI 教学助手</div>
+      <button class="button button-secondary new-button" id="sidebarNew"><svg><use href="#plus"/></svg>新建对话</button>
+      <div class="aside-label">最近对话</div>
+      <div class="nav-item active"><svg><use href="#chat"/></svg>新对话</div>
+      <div class="nav-item"><svg><use href="#chat"/></svg>高一语文教学设计</div>
+      <div class="aside-bottom">独立设计预览。按钮与下拉框可点击；这里不会连接真实账号或保存数据。</div>
+    </aside>
+    <main class="main">
+      <header class="main-header"><div><h1>新对话</h1><p>AI 教学助手</p></div><div class="main-header-actions"><button class="button button-quiet" id="headerNew"><svg><use href="#plus"/></svg>新对话</button><button class="button button-icon" aria-label="更多操作" id="more"><svg><use href="#dots"/></svg></button></div></header>
+      <div class="content">
+        <section class="intro"><h2>从一个想法，开始备课</h2><p>选择适合的助手，说明你的教学目标；资料、输出形式和下一步操作都清楚可见。</p></section>
+        <section class="composer" aria-label="对话输入预览">
+          <textarea id="prompt" aria-label="教学问题" placeholder="例如：为高一语文设计一节阅读讨论课……"></textarea>
+          <div class="composer-controls">
+            <button class="button button-secondary" id="attach"><svg><use href="#paperclip"/></svg>添加资料</button>
+            <input type="file" id="file" hidden>
+            <label class="field">本次使用的助手<select id="skill"><button><selectedcontent></selectedcontent></button><option value="general"><span class="choice-title">通用助手</span><span class="choice-detail">自由提问，先把思路理清</span></option><option value="lesson"><span class="choice-title">课堂教学设计</span><span class="choice-detail">梳理目标、活动与评价</span></option><option value="reading"><span class="choice-title">阅读教学助手</span><span class="choice-detail">从文本走向课堂讨论</span></option><option value="marking"><span class="choice-title">作业讲评助手</span><span class="choice-detail">整理重点与分层练习</span></option></select></label>
+            <button class="button button-primary send" id="send"><span id="sendLabel">发送问题</span><svg><use href="#arrow"/></svg></button>
+          </div><p class="file-label" id="fileLabel"></p>
+        </section>
+        <div class="demo-grid">
+          <section class="panel"><div class="panel-header"><h3>操作有轻重，也有回应</h3><p>常用操作醒目，辅助操作安静；处理中及时反馈。</p></div><div class="panel-body"><div class="state-row"><button class="button button-primary" id="primaryDemo">生成备课建议 <svg><use href="#arrow"/></svg></button><button class="button button-secondary" id="secondaryDemo"><svg><use href="#plus"/></svg>新建教学任务</button><button class="button button-quiet" id="quietDemo">查看最近工作</button><button class="button button-icon" aria-label="更多示例操作" id="iconDemo"><svg><use href="#dots"/></svg></button></div><div class="state-caption">需要说明原因的状态</div><div class="state-row"><button class="button button-secondary" disabled>服务配置中</button><button class="button button-danger" id="deleteDemo"><svg><use href="#trash"/></svg>删除当前草稿</button></div></div></section>
+          <section class="panel"><div class="panel-header"><h3>选项有名称，也有用途</h3><p>展开后先看清差异，再决定选哪一个。</p></div><div class="panel-body"><div class="select-grid"><label class="field">保存为<select><button><selectedcontent></selectedcontent></button><option value="docx"><span class="choice-title">Word 文档</span><span class="choice-detail">继续编辑与排版</span></option><option value="pdf"><span class="choice-title">PDF 文档</span><span class="choice-detail">便于分享和打印</span></option><option value="md"><span class="choice-title">Markdown</span><span class="choice-detail">保留结构化纯文本</span></option></select></label><label class="field">授课年级<select><button><selectedcontent></selectedcontent></button><option value="10"><span class="choice-title">高一</span><span class="choice-detail">面向起始年级备课</span></option><option value="11"><span class="choice-title">高二</span><span class="choice-detail">面向进阶年级备课</span></option><option value="12"><span class="choice-title">高三</span><span class="choice-detail">面向毕业年级备课</span></option></select></label><label class="field">使用身份<select><button><selectedcontent></selectedcontent></button><option value="teacher"><span class="choice-title">教师</span><span class="choice-detail">备课、创作与资料管理</span></option><option value="admin"><span class="choice-title">学校管理员</span><span class="choice-detail">学校配置与使用管理</span></option></select></label><label class="field">课件画幅<select><button><selectedcontent></selectedcontent></button><option value="wide"><span class="choice-title">16:9 宽屏</span><span class="choice-detail">适合常见投影与显示屏</span></option><option value="classic"><span class="choice-title">4:3 标准</span><span class="choice-detail">适合传统课件版式</span></option><option value="custom" disabled><span class="choice-title">自定义画幅</span><span class="choice-detail">当前暂不可用</span></option></select></label></div><div class="note"><svg><use href="#info"/></svg><span>选项的名称保持简洁，用途只在展开时补充。正式应用时会沿用真实 Skill 名称和已有选项值。</span></div></div></section>
+        </div>
+        <div class="feedback" role="status" id="feedback"></div>
+        <p class="research">参考：<a href="https://carbondesignsystem.com/components/button/usage/" target="_blank" rel="noreferrer">Carbon Button</a> · <a href="https://ant.design/components/button/" target="_blank" rel="noreferrer">Ant Design Button</a> · <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select" target="_blank" rel="noreferrer">MDN Customizable Select</a>。正式前端尚未应用此方案。</p>
+      </div>
+    </main>
+  </div>
+  <script>
+    const feedback = document.querySelector('#feedback');
+    function report(message) { feedback.textContent=message; feedback.classList.add('visible'); }
+    function newConversation() { document.querySelector('#prompt').value=''; document.querySelector('#skill').value='general'; report('已在预览中重置为新对话。'); document.querySelector('#prompt').focus(); }
+    document.querySelector('#sidebarNew').addEventListener('click',newConversation);
+    document.querySelector('#headerNew').addEventListener('click',newConversation);
+    document.querySelector('#attach').addEventListener('click',()=>document.querySelector('#file').click());
+    document.querySelector('#file').addEventListener('change',event=>{const file=event.target.files[0];document.querySelector('#fileLabel').textContent=file?`已选择：${file.name}`:'';});
+    document.querySelector('#send').addEventListener('click',()=>{const input=document.querySelector('#prompt');if(!input.value.trim()){input.focus();report('先输入教学问题，再发送。');return;}const button=document.querySelector('#send');button.disabled=true;document.querySelector('#sendLabel').textContent='正在发送…';setTimeout(()=>{button.disabled=false;document.querySelector('#sendLabel').textContent='发送问题';report('发送完成（设计预览，不会保存）。');},850);});
+    document.querySelectorAll('#primaryDemo,#secondaryDemo,#quietDemo,#iconDemo,#deleteDemo,#more').forEach(button=>button.addEventListener('click',()=>report(`已点击「${button.textContent.trim()||button.getAttribute('aria-label')}」；这是交互预览。`)));
+    document.querySelectorAll('select').forEach(select=>select.addEventListener('change',()=>report(`已选择「${select.selectedOptions[0].textContent}」。`)));
+  </script>
+</body>
+</html>

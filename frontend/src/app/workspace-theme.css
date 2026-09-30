@@ -1,0 +1,628 @@
+/* Reference-inspired application chrome. Login keeps its existing palette. */
+.dashboard {
+  padding: 0;
+  gap: 0;
+  --blue: #6046df;
+  --blue-deep: #4930bb;
+  --blue-soft: #efebff;
+  --ink: #272936;
+  --muted: #6b6c7e;
+  --hair: #e7e7ef;
+  --field: #f6f6fa;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: 62px minmax(0, 1fr);
+  height: 100dvh;
+  background: #f6f6fa;
+  color: var(--ink);
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+.dashboard ::selection {
+  background: #dfd7ff;
+  color: #302064;
+}
+.dashboard :focus-visible {
+  outline: 2px solid #6046df;
+  outline-offset: 3px;
+}
+.dashboard button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.dashboard .ui-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.school-topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  background: white;
+  border-bottom: 1px solid var(--hair);
+}
+.school-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.school-topbar-brand img {
+  object-fit: contain;
+}
+.school-topbar-brand strong {
+  font-size: 15px;
+  white-space: nowrap;
+}
+.school-topbar-brand > span {
+  border-left: 1px solid var(--hair);
+  padding-left: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.quick-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue);
+  color: white;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: background 0.18s;
+}
+.quick-create:hover {
+  background: var(--blue-deep);
+}
+.dashboard .rail-nav,
+.dashboard .rail-nav:hover,
+.dashboard .rail-nav:focus-within {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  grid-row: 2;
+  width: 216px !important;
+  padding: 42px 12px 16px !important;
+  background: #f6f6fa;
+  border-right: 1px solid #ebebf2;
+  min-height: 0;
+}
+.dashboard .rail-nav .dash-brand,
+.dashboard .rail-nav .brand-product {
+  display: none;
+}
+.dashboard .rail-nav .nav-toggle {
+  top: 9px;
+  right: 14px;
+  background: transparent;
+  color: #757487;
+}
+.dashboard .rail-nav nav {
+  gap: 5px;
+}
+.dashboard .rail-nav nav a {
+  height: 42px;
+  margin: 0;
+  gap: 12px;
+  padding: 0 14px;
+  color: #676777;
+  font-size: 13px;
+  font-weight: 400;
+}
+.dashboard .rail-nav nav a:hover {
+  background: #eeedf6;
+  color: #493a90;
+}
+.dashboard .rail-nav nav a.active {
+  background: #ece8ff;
+  color: #5e43d8;
+  font-weight: 600;
+  box-shadow: none;
+}
+.dashboard .rail-nav .rail-icon {
+  color: inherit;
+}
+.dashboard .rail-nav .dash-bottom {
+  border-color: var(--hair);
+}
+.dashboard .credit-line {
+  background: #eeebf6;
+  color: #686677;
+}
+.dashboard .credit-line strong {
+  color: #6046df;
+}
+.dashboard .account-button {
+  background: transparent;
+  color: #343241;
+}
+.dashboard .account-button:hover {
+  background: #eeebf8;
+}
+.dashboard .account-copy small {
+  color: #6b6879;
+}
+.dashboard .avatar {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  background: #e9e3fc;
+  color: #5940c4;
+}
+.dashboard .rail-nav.is-collapsed,
+.dashboard .rail-nav.is-collapsed:hover,
+.dashboard .rail-nav.is-collapsed:focus-within {
+  width: 72px !important;
+}
+.dashboard .rail-nav.is-collapsed nav a {
+  padding: 0;
+  justify-content: center;
+}
+.dashboard .dash-main {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  padding: 30px clamp(24px, 4vw, 64px) 48px;
+  background: #f6f6fa;
+  border-radius: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #c8c4d8 #f6f6fa;
+}
+.dashboard .dash-main.chat-host {
+  padding: 0;
+}
+.dashboard .dash-main::before,
+.dashboard .rail-nav nav a.active::before {
+  content: none;
+}
+.dashboard .account-copy strong { color: #383345; }
+@media (prefers-reduced-motion: reduce) {
+  .dashboard .rail-nav { transition: none; }
+}
+.dashboard .workspace-top {
+  color: #696779;
+}
+.teacher-home {
+  max-width: 1120px;
+}
+.workspace-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.workspace-heading h1 {
+  font-size: 23px;
+  line-height: 1.45;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.workspace-heading p {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #707080;
+}
+.workspace-heading > a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #645c7b;
+}
+.workspace-heading > a:hover {
+  color: var(--blue);
+}
+.workspace-heading > a svg {
+  width: 15px;
+}
+.workspace-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.workspace-shortcut {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 9px;
+  align-items: center;
+  padding: 19px 17px;
+  background: white;
+  border: 1px solid #e6e6ef;
+  border-radius: 12px;
+  transition:
+    border-color 0.18s,
+    background 0.18s;
+}
+.workspace-shortcut > svg:first-child {
+  color: #6953c6;
+}
+.workspace-shortcut strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.workspace-shortcut > span {
+  grid-column: 1 / -1;
+  color: #757381;
+  font-size: 11px;
+}
+.workspace-shortcut .shortcut-arrow {
+  position: absolute;
+  right: 12px;
+  top: 20px;
+  width: 14px;
+  color: #93909f;
+}
+.workspace-shortcut:hover {
+  background: #fdfcff;
+  border-color: #bfb1f2;
+}
+.teaching-focus {
+  padding: 22px;
+  background: linear-gradient(110deg, #5840de, #7a38e8);
+  border-radius: 14px;
+  color: white;
+  box-shadow: 0 7px 18px #5940cf24;
+  margin-bottom: 22px;
+}
+.focus-heading {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.focus-heading > svg {
+  margin-top: 3px;
+}
+.focus-heading h2 {
+  font-size: 17px;
+  font-weight: 600;
+}
+.focus-heading p {
+  margin-top: 5px;
+  color: #eee8ff;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.teacher-home .composer {
+  border: 1px solid #ffffff4d;
+  background: #ffffff17;
+  box-shadow: none;
+  border-radius: 10px;
+  padding: 16px;
+}
+.teacher-home .composer:focus-within {
+  border-color: #ffffffb3;
+}
+.teacher-home .composer textarea {
+  min-height: 74px;
+  color: white;
+  font-size: 14px;
+  line-height: 1.8;
+  caret-color: white;
+}
+.teacher-home .composer textarea::placeholder {
+  color: #f1ebff;
+}
+.teacher-home .composer-tools {
+  padding-top: 12px;
+  border-top: 1px solid #ffffff30;
+}
+.teacher-home .composer .soft-button,
+.teacher-home .composer select {
+  background: #ffffff14;
+  border-color: #ffffff66;
+  color: white;
+  font-size: 12px;
+  padding: 8px 10px;
+}
+.teacher-home .composer select {
+  max-width: 260px;
+}
+.teacher-home .composer option {
+  background: white;
+  color: #343041;
+}
+.teacher-home .start-button {
+  background: white;
+  color: #5940ca;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+.teacher-home .start-button:hover:not(:disabled) {
+  background: #f0eaff;
+}
+.teacher-home .composer .file-label {
+  color: #f2eaff;
+}
+.teacher-home .composer .text-button {
+  color: white;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.teacher-home .composer :focus-visible {
+  outline-color: white;
+}
+.teacher-home .composer .soft-button:focus-within {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+.teacher-home .teaching-tools,
+.teacher-home .work-columns > section,
+.teacher-home .work-columns > aside {
+  background: white;
+  border: 1px solid #e6e6ef;
+  border-radius: 12px;
+  min-width: 0;
+}
+.teacher-home .section-heading {
+  padding: 16px 18px;
+  border-bottom: 1px solid #efedf4;
+  margin: 0;
+  gap: 12px;
+}
+.teacher-home .section-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #30303d;
+}
+.teacher-home .section-heading h2 svg {
+  width: 17px;
+  color: #6a54c7;
+}
+.teacher-home .section-heading > span {
+  color: #73717f;
+}
+.teacher-home .section-heading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #716b83;
+}
+.teacher-home .section-heading > a svg {
+  width: 13px;
+}
+.teacher-home .tool-row {
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  margin: 0;
+  padding: 14px 12px;
+  gap: 4px;
+}
+.teacher-home .tool-button {
+  gap: 8px;
+  color: #555160;
+  padding: 10px 3px;
+}
+.teacher-home .tool-button:hover {
+  background: #f5f1ff;
+  transform: none;
+}
+.teacher-home .tool-icon {
+  background: #f2eefc;
+  color: #7256c2;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.teacher-home .tool-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.teacher-home .tool-button:nth-child(3n + 2) .tool-icon {
+  color: #21866f;
+  background: #ecf6f1;
+}
+.teacher-home .tool-button:nth-child(3n) .tool-icon {
+  color: #a16b24;
+  background: #fcf3e6;
+}
+.teacher-home .work-columns {
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+  gap: 18px;
+  margin-top: 22px;
+}
+.teacher-home .recent-item {
+  margin: 0 18px;
+  padding: 17px 0;
+  border-color: #efedf4;
+}
+.teacher-home .recent-item:last-child {
+  border-bottom: 0;
+}
+.teacher-home .recent-item strong {
+  color: #373340;
+  overflow-wrap: anywhere;
+}
+.teacher-home .recent-item small {
+  color: #77717f;
+}
+.teacher-home .recent-item > a {
+  font-size: 11px;
+}
+.teacher-home .skill-choice {
+  padding: 17px 18px;
+  color: #373340;
+  border-color: #efedf4;
+}
+.teacher-home .skill-choice:last-child {
+  border-bottom: 0;
+  border-radius: 0 0 12px 12px;
+}
+.teacher-home .skill-choice small {
+  color: #77717f;
+  line-height: 1.6;
+}
+.teacher-home .skill-choice:hover,
+.teacher-home .skill-choice[aria-pressed="true"] {
+  background: #f6f2ff;
+}
+.teacher-home .work-status {
+  margin: 18px;
+  background: #f7f6fa;
+  color: #716a80;
+  line-height: 1.8;
+  padding: 20px 16px;
+}
+@media (max-width: 1100px) {
+  .dashboard .rail-nav,
+  .dashboard .rail-nav:hover,
+  .dashboard .rail-nav:focus-within {
+    width: 186px !important;
+  }
+  .dashboard .dash-main {
+    padding: 26px 24px 40px;
+  }
+  .workspace-shortcut {
+    padding: 17px 13px;
+  }
+  .workspace-shortcut .shortcut-arrow {
+    display: none;
+  }
+  .teacher-home .work-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .teacher-home .tool-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .dashboard {
+    grid-template-rows: 56px minmax(0, 1fr);
+  }
+  .school-topbar {
+    padding: 0 14px;
+    gap: 8px;
+  }
+  .school-topbar-brand {
+    gap: 8px;
+  }
+  .school-topbar-brand strong {
+    font-size: 13px;
+  }
+  .school-topbar-brand > span {
+    display: none;
+  }
+  .quick-create {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .quick-create svg {
+    width: 15px;
+  }
+  .dashboard .rail-nav,
+  .dashboard .rail-nav:hover,
+  .dashboard .rail-nav:focus-within,
+  .dashboard .rail-nav.is-collapsed,
+  .dashboard .rail-nav.is-collapsed:hover,
+  .dashboard .rail-nav.is-collapsed:focus-within {
+    width: 56px !important;
+    padding: 16px 5px 10px !important;
+  }
+  .dashboard .rail-nav nav a {
+    justify-content: center;
+    padding: 0;
+    height: 44px;
+  }
+  .dashboard .dash-main {
+    padding: 22px 14px 30px;
+  }
+  .workspace-heading {
+    margin-bottom: 18px;
+  }
+  .workspace-heading h1 {
+    font-size: 20px;
+  }
+  .workspace-heading p {
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .workspace-heading > a {
+    display: none;
+  }
+  .workspace-shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-bottom: 16px;
+  }
+  .workspace-shortcut {
+    padding: 14px 10px;
+    gap: 7px;
+    grid-template-columns: 18px 1fr;
+  }
+  .workspace-shortcut > svg {
+    width: 17px;
+  }
+  .workspace-shortcut strong {
+    font-size: 12px;
+  }
+  .workspace-shortcut > span {
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .teaching-focus {
+    padding: 16px 12px;
+  }
+  .focus-heading {
+    gap: 7px;
+  }
+  .focus-heading h2 {
+    font-size: 14px;
+  }
+  .focus-heading p {
+    font-size: 11px;
+  }
+  .teacher-home .composer {
+    padding: 12px;
+  }
+  .teacher-home .composer textarea {
+    min-height: 122px;
+    font-size: 13px;
+  }
+  .teacher-home .composer-tools {
+    gap: 8px;
+  }
+  .teacher-home .composer select {
+    flex: 1;
+    min-width: 0;
+    width: 110px;
+  }
+  .teacher-home .start-button {
+    width: 100%;
+    margin: 0;
+  }
+  .teacher-home .section-heading {
+    padding: 14px 12px;
+  }
+  .teacher-home .teaching-tools .section-heading > span {
+    display: none;
+  }
+  .teacher-home .tool-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 10px 6px;
+  }
+  .teacher-home .work-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .teacher-home .recent-item {
+    margin: 0 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .teacher-home .recent-item > div {
+    flex-basis: calc(100% - 44px);
+  }
+  .teacher-home .recent-item > a {
+    margin-left: 44px;
+  }
+}

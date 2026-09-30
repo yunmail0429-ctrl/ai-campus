@@ -1,0 +1,15 @@
+FROM qdrant/qdrant:v1.19.1 AS source
+FROM busybox:musl AS probe
+
+FROM gcr.io/distroless/cc-debian13:latest
+COPY --from=source /qdrant/qdrant /qdrant/qdrant
+COPY --from=source /qdrant/config /qdrant/config
+COPY --from=source /lib/x86_64-linux-gnu/libunwind-ptrace.so.0 /usr/lib/x86_64-linux-gnu/libunwind-ptrace.so.0
+COPY --from=source /lib/x86_64-linux-gnu/libunwind-x86_64.so.8 /usr/lib/x86_64-linux-gnu/libunwind-x86_64.so.8
+COPY --from=source /lib/x86_64-linux-gnu/libunwind.so.8 /usr/lib/x86_64-linux-gnu/libunwind.so.8
+COPY --from=source /lib/x86_64-linux-gnu/liblzma.so.5 /usr/lib/x86_64-linux-gnu/liblzma.so.5
+COPY --from=probe /bin/busybox /usr/local/bin/busybox
+WORKDIR /qdrant
+ENV RUN_MODE=production
+EXPOSE 6333 6334
+ENTRYPOINT ["/qdrant/qdrant"]

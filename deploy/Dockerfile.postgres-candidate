@@ -1,0 +1,8 @@
+FROM postgres:17-alpine3.24
+
+RUN apk add --no-cache --virtual .pgvector-build git make gcc musl-dev \
+    && git clone --depth 1 --branch v0.8.6 https://github.com/pgvector/pgvector.git /tmp/pgvector \
+    && make -C /tmp/pgvector OPTFLAGS="" with_llvm=no \
+    && make -C /tmp/pgvector install with_llvm=no \
+    && apk del .pgvector-build \
+    && rm -rf /tmp/pgvector

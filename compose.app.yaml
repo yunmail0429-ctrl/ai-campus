@@ -1,0 +1,142 @@
+name: ai-campus-office
+x-backend: &backend
+  build: ./backend
+  image: ai-campus-office-backend:local
+  env_file: ./deploy/backend.env
+  environment:
+    QDRANT_URL: http://qdrant:6333
+  restart: unless-stopped
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    env_file: ./deploy/postgres.env
+    volumes: [database:/var/lib/postgresql/data]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U xflj -d xflj"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  redis:
+    image: redis:7-alpine
+    env_file: ./deploy/redis.env
+    command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes: [queue:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -qx PONG']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+  qdrant:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.qdrant-runtime
+    image: ai-campus-office-qdrant:local
+    volumes: [vectors:/qdrant/storage]
+    mem_limit: 1536m
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, /usr/local/bin/busybox, wget, -q, -O, /dev/null, http://127.0.0.1:6333/collections]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  embedding:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.embedding-runtime
+    image: ai-campus-office-embedding:local
+    command: ["--model-id", "BAAI/bge-large-zh-v1.5", "--auto-truncate", "false"]
+    volumes: [embeddings:/data]
+    mem_limit: 4g
+    cpus: 4
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, /usr/local/bin/busybox, wget, -q, -O, /dev/null, http://127.0.0.1:80/health]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  storage:
+    image: rustfs/rustfs:1.0.0@sha256:8cc9801755448b71a786705ce76692c77e14936cccd87cf2fc31842e58f4d1ff
+    env_file: ./deploy/rustfs.env
+    ports: ["127.0.0.1:19000:9000"]
+    volumes: [rustfs_objects:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, --max-time, "3", http://127.0.0.1:9000/health]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+  antivirus:
+    image: clamav/clamav:stable
+    volumes: [definitions:/var/lib/clamav]
+    restart: unless-stopped
+  init:
+    <<: *backend
+    restart: "no"
+    env_file: [./deploy/backend.env, ./deploy/admin.env]
+    volumes: ["./deploy/bootstrap.py:/app/bootstrap.py:ro"]
+    command: [sh, -c, "alembic upgrade head && python bootstrap.py"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      storage: {condition: service_healthy}
+  backend:
+    <<: *backend
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      init: {condition: service_completed_successfully}
+  worker:
+    <<: *backend
+    command: [celery, -A, app.worker, worker, --loglevel=info, --concurrency=1]
+    healthcheck:
+      test: [CMD-SHELL, 'celery -A app.worker inspect ping --destination "celery@$$HOSTNAME" --timeout 5']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      init: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+  scheduler:
+    <<: *backend
+    command: [celery, -A, app.worker, beat, --loglevel=info, --scheduler=app.beat_health:HeartbeatScheduler, --schedule=/app/local-data/celerybeat]
+    healthcheck:
+      test: [CMD, python, -m, app.beat_health]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      init: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+  frontend:
+    build: ./frontend
+    image: ai-campus-office-frontend:local
+    environment:
+      BACKEND_URL: http://backend:8000
+      APP_ORIGIN: http://localhost:3100
+      APP_ORIGINS: http://127.0.0.1:3100
+    ports: ["127.0.0.1:3100:3000"]
+    depends_on:
+      backend: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, /nodejs/bin/node, -e, "fetch('http://127.0.0.1:3000/login').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+volumes:
+  database:
+  queue:
+  objects:
+  rustfs_objects:
+    external: true
+    name: ai-campus-office_rustfs_objects_20260923
+  definitions:
+  vectors:
+  embeddings:

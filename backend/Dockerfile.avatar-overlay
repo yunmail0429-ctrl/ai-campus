@@ -1,0 +1,3 @@
+FROM ai-campus-office-backend:local
+COPY app/accounts.py app/auth.py app/models.py app/schemas.py /app/app/
+COPY migrations/versions/a17b7c4d95e2_user_avatars.py /app/migrations/versions/
